@@ -1,0 +1,145 @@
+#!/bin/bash
+#
+# OpenMediaVault Dropbox Backup Script
+# Syncs Dropbox to local folder using rclone
+#
+# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+# @author    Gabrael Burke <gabrael@example.com>
+# @copyright Copyright (c) 2024 Gabrael Burke
+#
+
+set -e
+
+# Configuration
+STATUS_FILE="/var/lib/openmediavault/dropbox-backup-status.json"
+LOG_TAG="omv-dropbox-backup"
+OMV_CONFIG_FILE="/etc/openmediavault/config.xml"
+
+# Logging functions
+log_info() {
+    logger -t "$LOG_TAG" -p user.info "$1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1"
+}
+
+log_error() {
+    logger -t "$LOG_TAG" -p user.err "$1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] $1" >&2
+}
+
+# Update status file
+update_status() {
+    local status="$1"
+    local message="$2"
+    mkdir -p "$(dirname "$STATUS_FILE")"
+    cat > "$STATUS_FILE" << EOF
+{
+    "lastRun": "$(date -Iseconds)",
+    "lastStatus": "$status",
+    "lastMessage": "$message"
+}
+EOF
+}
+
+# Get config value from OMV XML
+get_config() {
+    local xpath="$1"
+    xmlstarlet sel -t -v "$xpath" "$OMV_CONFIG_FILE" 2>/dev/null || echo ""
+}
+
+# Get shared folder path by UUID
+get_sharedfolder_path() {
+    local uuid="$1"
+    if [ -z "$uuid" ]; then
+        echo ""
+        return
+    fi
+
+    # Get the shared folder relative path and mount point reference
+    local reldirpath=$(get_config "//system/shares/sharedfolder[uuid='$uuid']/reldirpath")
+    local mntentref=$(get_config "//system/shares/sharedfolder[uuid='$uuid']/mntentref")
+
+    if [ -z "$mntentref" ]; then
+        echo ""
+        return
+    fi
+
+    # Get the mount point directory
+    local mntdir=$(get_config "//system/fstab/mntent[uuid='$mntentref']/dir")
+
+    if [ -n "$mntdir" ] && [ -n "$reldirpath" ]; then
+        echo "${mntdir}/${reldirpath}"
+    else
+        echo ""
+    fi
+}
+
+# Main backup function
+main() {
+    log_info "Starting Dropbox backup..."
+
+    # Check if enabled
+    local enabled=$(get_config "//services/dropbox-backup/enable")
+    if [ "$enabled" != "1" ]; then
+        log_info "Dropbox backup is disabled. Exiting."
+        exit 0
+    fi
+
+    # Get configuration
+    local sharedfolderref=$(get_config "//services/dropbox-backup/sharedfolderref")
+    local remotepath=$(get_config "//services/dropbox-backup/remotepath")
+    local extraoptions=$(get_config "//services/dropbox-backup/extraoptions")
+
+    # Default remote path to root
+    if [ -z "$remotepath" ]; then
+        remotepath="/"
+    fi
+
+    # Get destination path
+    local destpath=$(get_sharedfolder_path "$sharedfolderref")
+    if [ -z "$destpath" ]; then
+        log_error "Destination folder not configured or not found."
+        update_status "error" "Destination folder not configured"
+        exit 1
+    fi
+
+    # Ensure destination exists
+    if [ ! -d "$destpath" ]; then
+        log_error "Destination path does not exist: $destpath"
+        update_status "error" "Destination path does not exist"
+        exit 1
+    fi
+
+    # Check if rclone has dropbox configured
+    if ! rclone listremotes 2>/dev/null | grep -q '^dropbox:$'; then
+        log_error "Dropbox remote not configured in rclone. Run 'rclone config' first."
+        update_status "error" "Dropbox not linked"
+        exit 1
+    fi
+
+    # Build rclone command
+    local source="dropbox:${remotepath}"
+    local rclone_cmd="rclone sync \"$source\" \"$destpath\" --verbose --stats 30s"
+
+    # Add extra options if specified
+    if [ -n "$extraoptions" ]; then
+        rclone_cmd="$rclone_cmd $extraoptions"
+    fi
+
+    log_info "Syncing from $source to $destpath"
+    log_info "Command: $rclone_cmd"
+
+    update_status "running" "Backup in progress..."
+
+    # Run rclone
+    if eval $rclone_cmd 2>&1 | while read line; do log_info "$line"; done; then
+        log_info "Backup completed successfully."
+        update_status "success" "Backup completed successfully"
+    else
+        log_error "Backup failed."
+        update_status "error" "Backup failed - check logs"
+        exit 1
+    fi
+}
+
+# Run main function
+main "$@"

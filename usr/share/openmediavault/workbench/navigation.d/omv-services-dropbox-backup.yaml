@@ -1,0 +1,7 @@
+version: "1.0"
+type: navigation-item
+data:
+  path: services.dropbox-backup
+  text: _("Dropbox Backup")
+  icon: mdi:dropbox
+  url: /services/dropbox-backup

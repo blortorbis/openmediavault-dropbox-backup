@@ -1,3 +1,16 @@
+openmediavault-dropbox-backup (1.0.0) stable; urgency=low
+
+  * Complete rewrite for OpenMediaVault 7.x
+  * Renamed from openmediavault-dropbox to openmediavault-dropbox-backup
+  * Changed to one-way backup (Dropbox to local)
+  * Replaced Dropbox daemon with rclone for sync
+  * OAuth authentication via rclone (no Dropbox app registration needed)
+  * Added scheduled backups via systemd timer
+  * Modern YAML-based workbench UI
+  * Selective folder sync support
+
+ -- Gabrael Burke <gabrael@example.com>  Sat, 14 Dec 2024 10:00:00 -0500
+
 openmediavault-dropbox (0.1) unstable; urgency=low
 
   * Initial release.

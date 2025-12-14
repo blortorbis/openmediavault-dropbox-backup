@@ -1,3 +1,0 @@
-* in postinst
-  - Create dropbox user
-  - Execute INSTALL_SCRIPT as dropbox user => dropboxd will be installed to /home/dropbox/.dropbox-dist instead of in /root/.dropbox-dist

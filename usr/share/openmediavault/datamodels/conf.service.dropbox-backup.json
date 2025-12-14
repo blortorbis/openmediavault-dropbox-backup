@@ -1,0 +1,43 @@
+{
+    "type": "config",
+    "id": "conf.service.dropbox-backup",
+    "title": "Dropbox Backup",
+    "queryinfo": {
+        "xpath": "//services/dropbox-backup",
+        "iterable": false
+    },
+    "properties": {
+        "enable": {
+            "type": "boolean",
+            "default": false
+        },
+        "sharedfolderref": {
+            "type": "string",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "format": "uuidv4"
+                },
+                {
+                    "type": "string",
+                    "maxLength": 0
+                }
+            ]
+        },
+        "remotepath": {
+            "type": "string",
+            "default": "/",
+            "description": "Remote path in Dropbox to sync (use / for entire Dropbox)"
+        },
+        "schedule": {
+            "type": "string",
+            "enum": ["disabled", "hourly", "daily", "weekly"],
+            "default": "disabled"
+        },
+        "extraoptions": {
+            "type": "string",
+            "default": "",
+            "description": "Additional rclone options"
+        }
+    }
+}

@@ -1,0 +1,21 @@
+[Unit]
+Description=OpenMediaVault Dropbox Backup
+Documentation=https://github.com/yourusername/openmediavault-dropbox-backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/omv-dropbox-backup
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/openmediavault
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,12 +1,15 @@
-Source: openmediavault-dropbox
+Source: openmediavault-dropbox-backup
 Section: net
 Priority: optional
-Maintainer: Lorenzo Dieryckx <lorenzo.dieryckx@gmail.com>
-Build-Depends-Indep: debhelper (>> 7 )
-Standards-Version: 3.6.10
+Maintainer: Gabrael Burke <gabrael@example.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/yourusername/openmediavault-dropbox-backup
 
-Package: openmediavault-dropbox
+Package: openmediavault-dropbox-backup
 Architecture: all
-Depends: openmediavault (>= 0.4.27), python-gpgme (>= 0.1)
-Description: OpenMediaVault dropbox plugin
- Log on to your dropbox account and have it synchronized with a local folder on your OpenMediaVault server
+Depends: openmediavault (>= 7.0), rclone, ${misc:Depends}
+Description: OpenMediaVault Dropbox backup plugin
+ Back up your Dropbox contents to a local folder on your OpenMediaVault
+ server. Features include OAuth authentication via rclone, selective folder
+ sync, manual and scheduled backups (hourly/daily/weekly).

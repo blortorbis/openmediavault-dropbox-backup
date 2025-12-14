@@ -1,0 +1,104 @@
+version: "1.0"
+type: component
+data:
+  name: omv-services-dropbox-backup-form-page
+  type: formPage
+  config:
+    request:
+      service: DropboxBackup
+      get:
+        method: get
+      post:
+        method: set
+    hints:
+      - type: info
+        text: _("Link your Dropbox account using rclone, then configure backup settings. Backups are one-way (Dropbox to local).")
+        dismissible: true
+    fields:
+      - type: checkbox
+        name: enable
+        label: _("Enabled")
+        value: false
+      - type: divider
+        title: _("Dropbox Account")
+      - type: container
+        fields:
+          - type: button
+            name: checkAuth
+            text: _("Check Link Status")
+            request:
+              service: DropboxBackup
+              method: getAuthStatus
+            successNotification: _("Dropbox link status checked.")
+          - type: button
+            name: unlinkBtn
+            text: _("Unlink Account")
+            confirmationDialogConfig:
+              template: confirmation-danger
+              message: _("Are you sure you want to unlink your Dropbox account?")
+            request:
+              service: DropboxBackup
+              method: unlinkAccount
+            successNotification: _("Dropbox account unlinked.")
+      - type: hint
+        hintType: info
+        text: _("To link your Dropbox account, run 'rclone config' on the OMV server and create a remote named 'dropbox'.")
+      - type: divider
+        title: _("Backup Settings")
+      - type: sharedFolderSelect
+        name: sharedfolderref
+        label: _("Destination Folder")
+        hint: _("Select the shared folder where Dropbox files will be backed up.")
+        validators:
+          requiredIf:
+            operator: eq
+            arg0:
+              prop: enable
+            arg1: true
+      - type: textInput
+        name: remotepath
+        label: _("Dropbox Path")
+        value: "/"
+        hint: _("Path in Dropbox to backup. Use '/' for entire Dropbox, or specify a subfolder like '/Photos'.")
+      - type: select
+        name: schedule
+        label: _("Backup Schedule")
+        value: "disabled"
+        store:
+          data:
+            - - "disabled"
+              - _("Manual only")
+            - - "hourly"
+              - _("Hourly")
+            - - "daily"
+              - _("Daily")
+            - - "weekly"
+              - _("Weekly")
+      - type: divider
+        title: _("Manual Backup")
+      - type: button
+        name: runBackupBtn
+        text: _("Run Backup Now")
+        confirmationDialogConfig:
+          template: confirmation
+          message: _("Start a backup now?")
+        request:
+          service: DropboxBackup
+          method: runBackup
+        successNotification: _("Backup started. Check logs for progress.")
+        enabledConstraint:
+          operator: eq
+          arg0:
+            prop: enable
+          arg1: true
+      - type: divider
+        title: _("Advanced")
+      - type: textInput
+        name: extraoptions
+        label: _("Extra rclone Options")
+        value: ""
+        hint: _("Additional options to pass to rclone (e.g., '--bwlimit 1M' for bandwidth limiting).")
+    buttons:
+      - template: submit
+      - template: cancel
+        url: /services

@@ -1,0 +1,8 @@
+version: "1.0"
+type: route
+data:
+  url: /services/dropbox-backup
+  title: _("Dropbox Backup")
+  editing: true
+  notificationTitle: _("Updated Dropbox Backup settings.")
+  component: omv-services-dropbox-backup-form-page

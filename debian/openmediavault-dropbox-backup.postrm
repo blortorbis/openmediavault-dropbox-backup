@@ -1,0 +1,40 @@
+#!/bin/sh
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+case "$1" in
+    purge)
+        # Remove configuration from OMV
+        if omv_config_exists "//services/dropbox-backup"; then
+            omv_config_delete "//services/dropbox-backup"
+        fi
+
+        # Remove status file
+        rm -f /var/lib/openmediavault/dropbox-backup-status.json
+
+        # Rebuild workbench configuration
+        omv-mkworkbench all || true
+    ;;
+
+    remove)
+        # Stop and disable timer if running
+        systemctl stop omv-dropbox-backup.timer 2>/dev/null || true
+        systemctl disable omv-dropbox-backup.timer 2>/dev/null || true
+        systemctl daemon-reload || true
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument '$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
