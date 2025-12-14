@@ -21,25 +21,6 @@ data:
         value: false
       - type: divider
         title: _("Dropbox Account")
-      - type: container
-        fields:
-          - type: button
-            name: checkAuth
-            text: _("Check Link Status")
-            request:
-              service: DropboxBackup
-              method: getAuthStatus
-            successNotification: _("Dropbox link status checked.")
-          - type: button
-            name: unlinkBtn
-            text: _("Unlink Account")
-            confirmationDialogConfig:
-              template: confirmation-danger
-              message: _("Are you sure you want to unlink your Dropbox account?")
-            request:
-              service: DropboxBackup
-              method: unlinkAccount
-            successNotification: _("Dropbox account unlinked.")
       - type: hint
         hintType: info
         text: _("To link your Dropbox account, run 'rclone config' on the OMV server and create a remote named 'dropbox'.")
@@ -74,23 +55,6 @@ data:
               - _("Daily")
             - - "weekly"
               - _("Weekly")
-      - type: divider
-        title: _("Manual Backup")
-      - type: button
-        name: runBackupBtn
-        text: _("Run Backup Now")
-        confirmationDialogConfig:
-          template: confirmation
-          message: _("Start a backup now?")
-        request:
-          service: DropboxBackup
-          method: runBackup
-        successNotification: _("Backup started. Check logs for progress.")
-        enabledConstraint:
-          operator: eq
-          arg0:
-            prop: enable
-          arg1: true
       - type: divider
         title: _("Advanced")
       - type: textInput
