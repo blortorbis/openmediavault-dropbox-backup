@@ -1,7 +1,7 @@
 Source: openmediavault-dropbox-backup
 Section: net
 Priority: optional
-Maintainer: Gabrael Burke <gabrael@example.com>
+Maintainer: Gabe Burke <gabeburke@gmail.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.2
 Homepage: https://github.com/yourusername/openmediavault-dropbox-backup

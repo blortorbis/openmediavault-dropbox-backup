@@ -1,7 +1,7 @@
 # This file is part of OpenMediaVault.
 #
 # @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
-# @author    Gabrael Burke <gabrael@example.com>
+# @author    Gabe Burke <gabeburke@gmail.com>
 # @copyright Copyright (c) 2024 Gabrael Burke
 #
 # OpenMediaVault is free software: you can redistribute it and/or modify
