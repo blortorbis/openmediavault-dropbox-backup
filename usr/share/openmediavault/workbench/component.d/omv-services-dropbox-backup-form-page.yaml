@@ -66,3 +66,14 @@ data:
       - template: submit
       - template: cancel
         url: /services
+      - text: _("Run Backup Now")
+        execute:
+          type: taskDialog
+          taskDialog:
+            config:
+              title: _("Dropbox backup")
+              autoScroll: true
+              startOnInit: true
+              request:
+                service: DropboxBackup
+                method: runBackup

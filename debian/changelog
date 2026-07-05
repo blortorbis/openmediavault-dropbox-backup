@@ -1,3 +1,18 @@
+openmediavault-dropbox-backup (1.0.1) stable; urgency=low
+
+  * Fix backup schedule: hourly/daily/weekly selection now generates a
+    systemd timer drop-in (previously always ran daily at 02:00)
+  * Fix failure reporting: rclone errors now mark the backup as failed
+    instead of success
+  * Fix systemd sandboxing that prevented rclone from writing to the
+    backup destination and refreshing its OAuth token
+  * Add "Run Backup Now" button with live output to the workbench UI
+  * Remove unused RPC methods (startAuth, getAuthStatus, unlinkAccount,
+    getBackupStatus)
+  * Replace placeholder homepage/documentation URLs
+
+ -- Gabe Burke <gabeburke@gmail.com>  Sat, 04 Jul 2026 10:00:00 -0500
+
 openmediavault-dropbox-backup (1.0.0) stable; urgency=low
 
   * Complete rewrite for OpenMediaVault 7.x

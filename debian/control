@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Gabe Burke <gabeburke@gmail.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.2
-Homepage: https://github.com/yourusername/openmediavault-dropbox-backup
+Homepage: https://github.com/blortorbis/openmediavault-dropbox-backup
 
 Package: openmediavault-dropbox-backup
 Architecture: all

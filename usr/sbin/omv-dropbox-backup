@@ -8,7 +8,7 @@
 # @copyright Copyright (c) 2024 Gabrael Burke
 #
 
-set -e
+set -eo pipefail
 
 # Configuration
 STATUS_FILE="/var/lib/openmediavault/dropbox-backup-status.json"
@@ -118,20 +118,22 @@ main() {
 
     # Build rclone command
     local source="dropbox:${remotepath}"
-    local rclone_cmd="rclone sync \"$source\" \"$destpath\" --verbose --stats 30s"
+    local -a rclone_args=(sync "$source" "$destpath" --verbose --stats 30s)
 
     # Add extra options if specified
     if [ -n "$extraoptions" ]; then
-        rclone_cmd="$rclone_cmd $extraoptions"
+        local -a extra_args
+        read -r -a extra_args <<< "$extraoptions"
+        rclone_args+=("${extra_args[@]}")
     fi
 
     log_info "Syncing from $source to $destpath"
-    log_info "Command: $rclone_cmd"
+    log_info "Command: rclone ${rclone_args[*]}"
 
     update_status "running" "Backup in progress..."
 
-    # Run rclone
-    if eval $rclone_cmd 2>&1 | while read line; do log_info "$line"; done; then
+    # Run rclone (pipefail ensures we check rclone's exit status, not the logger's)
+    if rclone "${rclone_args[@]}" 2>&1 | while IFS= read -r line; do log_info "$line"; done; then
         log_info "Backup completed successfully."
         update_status "success" "Backup completed successfully"
     else

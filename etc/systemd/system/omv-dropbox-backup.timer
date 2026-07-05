@@ -1,10 +1,10 @@
 [Unit]
 Description=OpenMediaVault Dropbox Backup Timer
-Documentation=https://github.com/yourusername/openmediavault-dropbox-backup
+Documentation=https://github.com/blortorbis/openmediavault-dropbox-backup
 
 [Timer]
-# Timer schedule is managed by the OMV module
-# Default: daily at 2:00 AM
+# The schedule is overridden by a drop-in generated from the plugin
+# configuration (see the Salt state). Default: daily at 2:00 AM.
 OnCalendar=*-*-* 02:00:00
 RandomizedDelaySec=1800
 Persistent=true

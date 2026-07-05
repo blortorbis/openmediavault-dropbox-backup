@@ -1,6 +1,6 @@
 [Unit]
 Description=OpenMediaVault Dropbox Backup
-Documentation=https://github.com/yourusername/openmediavault-dropbox-backup
+Documentation=https://github.com/blortorbis/openmediavault-dropbox-backup
 After=network-online.target
 Wants=network-online.target
 
@@ -10,11 +10,12 @@ ExecStart=/usr/sbin/omv-dropbox-backup
 StandardOutput=journal
 StandardError=journal
 
-# Security hardening
+# Security hardening.
+# Note: ProtectSystem=full (not strict) because rclone must be able to
+# write to the backup destination under /srv, and ProtectHome must stay
+# off because rclone refreshes its OAuth token in /root/.config/rclone.
 NoNewPrivileges=yes
-ProtectSystem=strict
-ProtectHome=read-only
-ReadWritePaths=/var/lib/openmediavault
+ProtectSystem=full
 PrivateTmp=yes
 
 [Install]
